@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Clone') {
+      steps {
+        git 'https://github.com/YOUR_USERNAME/python-pytest-ci.git'
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        sh 'pip install -r requirements.txt'
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        sh 'pytest'
+      }
+    }
+
+    stage('Archive Report') {
+      steps {
+        archiveArtifacts artifacts: 'report.html', allowEmptyArchive: true
+      }
+    }
+
+    stage('Publish HTML Report') {
+      steps {
+        publishHTML(target: [
+          reportDir: '.',
+          reportFiles: 'report.html',
+          reportName: 'Test Report'
+        ])
+      }
+    }
+  }
+}
